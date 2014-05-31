@@ -19,13 +19,13 @@ post '/create' do
   image      = Image.new
   image.data = params[:upload_file]
   image.save
-  redirect "#{image.id}/show"
-end
-
-get '/:id/show' do 
-  @image = Image.find(params[:id])
-  File.open("./#{@image.id}.jpg", "wb") do |file|
+  puts params[:image]
+  File.open("./image/#{@image.id}.jpg", "wb") do |file|
     file.write(@image.data)
   end
-  @image.data
+end
+
+get '/:id/show' do
+  @image_path = "./image/#{params[:id]}.jpg"
+  erb :show
 end
