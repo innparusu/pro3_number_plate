@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'active_record'
+require 'json'
 
 set :bind, '0.0.0.0'
 
@@ -25,6 +26,8 @@ post '/create' do
       file.write(image.data)
     end
   end
+  content_type :json
+  image.id.to_json
 end
 
 get '/:id/show' do
