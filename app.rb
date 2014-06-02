@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'active_record'
+require 'tesseract-ocr'
 
 set :bind, '0.0.0.0'
 
@@ -20,11 +21,19 @@ end
 post '/create' do
   image      = Image.new
   image.data = params[:upload_file]
-  if image.save
-    File.open("./public/images/#{image.id}.jpg", "wb") do |file|
+    File.open("./public/images/#{image.id}.jpg", "wb") do |file|    
       file.write(image.data)
     end
-  end
+    
+    system("pro3_ocr/cpp/a.out ./public/images/#{image.id}.jpg")
+
+    engine = Tesseract::Engine.new do |engine|
+        engine.language = :eng
+    end
+
+    txt = engine.text_for('pro3_ocr/cpp/Out.tif')
+    image.number =  txt.split("\n")[1].gsub(/[^\d\-]/,"")[-4,4].sub(/\-/," ")
+   image.save 
 end
 
 get '/:id/show' do
