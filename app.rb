@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'active_record'
 require 'tesseract-ocr'
+require 'json'
 
 set :server, 'webrick'
 set :bind, '0.0.0.0'
@@ -43,7 +44,11 @@ post '/create' do
   puts txt.split("\n")[1].gsub(/[^\d\-]/,"")
   puts "---------"
   image.number =  txt.split("\n")[1].gsub(/[^\d]/,"")
+
   image.save 
+
+  content_type :json
+  image.number.to_json
 end
 
 get '/:id/show' do
